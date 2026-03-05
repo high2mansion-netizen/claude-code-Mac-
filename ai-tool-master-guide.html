@@ -1,0 +1,985 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AIツール活用マスターガイド</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;600&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg-dark: #0a0e1a;
+  --bg-card: #111827;
+  --bg-card-hover: #1a2237;
+  --accent-blue: #3b82f6;
+  --accent-cyan: #06b6d4;
+  --accent-purple: #8b5cf6;
+  --accent-orange: #f59e0b;
+  --accent-green: #10b981;
+  --accent-pink: #ec4899;
+  --accent-red: #ef4444;
+  --text-primary: #f1f5f9;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  --border: #1e293b;
+  --glow-blue: rgba(59, 130, 246, 0.15);
+  --glow-cyan: rgba(6, 182, 212, 0.15);
+  --glow-purple: rgba(139, 92, 246, 0.15);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: var(--bg-dark);
+  color: var(--text-primary);
+  font-family: 'Noto Sans JP', sans-serif;
+  font-weight: 400;
+  line-height: 1.7;
+  overflow-x: hidden;
+}
+
+/* === HERO === */
+.hero {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 2rem;
+  overflow: hidden;
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  width: 600px; height: 600px;
+  background: radial-gradient(circle, var(--accent-blue) 0%, transparent 70%);
+  opacity: 0.08;
+  top: -200px; right: -100px;
+  border-radius: 50%;
+  animation: pulse 8s ease-in-out infinite;
+}
+
+.hero::after {
+  content: '';
+  position: absolute;
+  width: 500px; height: 500px;
+  background: radial-gradient(circle, var(--accent-purple) 0%, transparent 70%);
+  opacity: 0.06;
+  bottom: -150px; left: -100px;
+  border-radius: 50%;
+  animation: pulse 10s ease-in-out infinite reverse;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+}
+
+.hero-content { position: relative; z-index: 1; max-width: 800px; }
+
+.hero-badge {
+  display: inline-block;
+  padding: 0.4rem 1.2rem;
+  border: 1px solid var(--accent-cyan);
+  border-radius: 50px;
+  font-size: 0.75rem;
+  color: var(--accent-cyan);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-bottom: 2rem;
+  animation: fadeIn 1s ease;
+}
+
+.hero-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(2.5rem, 6vw, 4.5rem);
+  font-weight: 900;
+  line-height: 1.15;
+  margin-bottom: 1.5rem;
+  animation: slideUp 0.8s ease;
+}
+
+.hero-title .gradient-text {
+  background: linear-gradient(135deg, var(--accent-blue), var(--accent-cyan), var(--accent-purple));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero-sub {
+  font-size: 1.1rem;
+  color: var(--text-secondary);
+  font-weight: 300;
+  max-width: 600px;
+  margin: 0 auto 3rem;
+  animation: slideUp 0.8s ease 0.2s both;
+}
+
+.hero-chips {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.6rem;
+  animation: slideUp 0.8s ease 0.4s both;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.45rem 1rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  transition: all 0.3s ease;
+}
+
+.chip:hover { border-color: var(--accent-blue); color: var(--text-primary); }
+.chip .icon { font-size: 1rem; }
+
+/* === SECTION LAYOUT === */
+.section {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 5rem 1.5rem;
+}
+
+.section-header {
+  text-align: center;
+  margin-bottom: 3.5rem;
+}
+
+.section-number {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--accent-cyan);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  display: block;
+  margin-bottom: 0.75rem;
+}
+
+.section-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(1.8rem, 4vw, 2.6rem);
+  font-weight: 900;
+  margin-bottom: 0.75rem;
+}
+
+.section-desc {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  max-width: 550px;
+  margin: 0 auto;
+  font-weight: 300;
+}
+
+.divider {
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--border), transparent);
+  margin: 0 auto;
+}
+
+/* === CLAUDE CODE MAC SECTION === */
+.mac-setup {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.step-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 2rem;
+  display: grid;
+  grid-template-columns: 56px 1fr;
+  gap: 1.5rem;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.step-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 3px; height: 100%;
+  background: linear-gradient(180deg, var(--accent-blue), var(--accent-cyan));
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.step-card:hover { border-color: var(--accent-blue); transform: translateX(4px); }
+.step-card:hover::before { opacity: 1; }
+
+.step-num {
+  width: 56px; height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--accent-blue), var(--accent-cyan));
+  border-radius: 14px;
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 600;
+  font-size: 1.2rem;
+  color: white;
+  flex-shrink: 0;
+}
+
+.step-content h3 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.step-content p {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  margin-bottom: 0.75rem;
+}
+
+.code-block {
+  background: #0d1117;
+  border: 1px solid #21262d;
+  border-radius: 10px;
+  padding: 1rem 1.25rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.82rem;
+  color: #e6edf3;
+  overflow-x: auto;
+  position: relative;
+  line-height: 1.8;
+}
+
+.code-block .comment { color: #8b949e; }
+.code-block .cmd { color: #79c0ff; }
+.code-block .string { color: #a5d6ff; }
+
+.tip-box {
+  background: rgba(6, 182, 212, 0.06);
+  border: 1px solid rgba(6, 182, 212, 0.2);
+  border-radius: 10px;
+  padding: 1rem 1.25rem;
+  font-size: 0.85rem;
+  color: var(--accent-cyan);
+  margin-top: 0.75rem;
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-start;
+}
+
+.tip-box .tip-icon { flex-shrink: 0; font-size: 1rem; }
+
+/* === AI TOOL MAP === */
+.tool-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.tool-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 2rem;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.tool-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--tool-color, var(--accent-blue));
+  box-shadow: 0 12px 40px rgba(0,0,0,0.3);
+}
+
+.tool-card::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: var(--tool-color, var(--accent-blue));
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.tool-card:hover::after { opacity: 1; }
+
+.tool-card[data-tool="perplexity"] { --tool-color: var(--accent-cyan); }
+.tool-card[data-tool="claude"] { --tool-color: var(--accent-orange); }
+.tool-card[data-tool="chatgpt"] { --tool-color: var(--accent-green); }
+.tool-card[data-tool="gemini"] { --tool-color: var(--accent-blue); }
+.tool-card[data-tool="napkin"] { --tool-color: var(--accent-pink); }
+
+.tool-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.tool-icon {
+  width: 44px; height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  background: var(--bg-dark);
+  border: 1px solid var(--border);
+}
+
+.tool-name {
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+.tool-role {
+  font-size: 0.75rem;
+  color: var(--tool-color, var(--accent-blue));
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.tool-desc {
+  color: var(--text-secondary);
+  font-size: 0.88rem;
+  margin-bottom: 1rem;
+}
+
+.use-cases {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.use-tag {
+  padding: 0.3rem 0.7rem;
+  background: var(--bg-dark);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  transition: all 0.2s ease;
+}
+
+.tool-card:hover .use-tag {
+  border-color: var(--tool-color, var(--accent-blue));
+  color: var(--text-primary);
+}
+
+/* === WORKFLOW === */
+.workflow-container {
+  position: relative;
+  padding: 2rem 0;
+}
+
+.workflow-line {
+  position: absolute;
+  left: 28px;
+  top: 0; bottom: 0;
+  width: 2px;
+  background: linear-gradient(180deg, var(--accent-cyan), var(--accent-blue), var(--accent-purple), var(--accent-orange), var(--accent-green));
+}
+
+.wf-step {
+  position: relative;
+  padding-left: 72px;
+  margin-bottom: 2.5rem;
+}
+
+.wf-step:last-child { margin-bottom: 0; }
+
+.wf-dot {
+  position: absolute;
+  left: 18px; top: 4px;
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  background: var(--bg-dark);
+  border: 3px solid var(--wf-color, var(--accent-blue));
+  z-index: 1;
+}
+
+.wf-step:nth-child(1) { --wf-color: var(--accent-cyan); }
+.wf-step:nth-child(2) { --wf-color: var(--accent-blue); }
+.wf-step:nth-child(3) { --wf-color: var(--accent-purple); }
+.wf-step:nth-child(4) { --wf-color: var(--accent-orange); }
+.wf-step:nth-child(5) { --wf-color: var(--accent-green); }
+
+.wf-tool {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--wf-color, var(--accent-blue));
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 0.25rem;
+}
+
+.wf-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin-bottom: 0.35rem;
+}
+
+.wf-desc {
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+}
+
+.wf-arrow {
+  display: inline-block;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  margin-top: 0.5rem;
+}
+
+/* === GOODNOTES === */
+.gn-methods {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.gn-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 2rem;
+  transition: all 0.3s ease;
+  text-align: center;
+}
+
+.gn-card:hover {
+  border-color: var(--accent-purple);
+  transform: translateY(-4px);
+}
+
+.gn-emoji {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  display: block;
+}
+
+.gn-card h3 {
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.gn-card .label {
+  font-size: 0.7rem;
+  color: var(--accent-purple);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  display: block;
+}
+
+.gn-card p {
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+}
+
+/* === COMPARISON TABLE === */
+.compare-table-wrap {
+  overflow-x: auto;
+  border-radius: 16px;
+  border: 1px solid var(--border);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--bg-card);
+  font-size: 0.85rem;
+}
+
+thead {
+  background: linear-gradient(135deg, rgba(59,130,246,0.1), rgba(139,92,246,0.1));
+}
+
+th {
+  padding: 1rem;
+  text-align: left;
+  font-weight: 600;
+  color: var(--text-primary);
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+
+td {
+  padding: 0.85rem 1rem;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-secondary);
+  vertical-align: top;
+}
+
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: var(--bg-card-hover); color: var(--text-primary); }
+
+td:first-child {
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+}
+
+.strength { color: var(--accent-green); font-weight: 500; }
+.neutral { color: var(--text-secondary); }
+
+/* === FOOTER === */
+.footer {
+  text-align: center;
+  padding: 4rem 1.5rem;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+}
+
+/* === ANIMATIONS === */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.fade-in { animation: fadeIn 0.6s ease; }
+
+/* === RESPONSIVE === */
+@media (max-width: 640px) {
+  .step-card {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  .step-num {
+    width: 44px; height: 44px;
+    font-size: 1rem;
+  }
+  .workflow-line { left: 18px; }
+  .wf-step { padding-left: 52px; }
+  .wf-dot { left: 8px; }
+  table { font-size: 0.78rem; }
+  th, td { padding: 0.65rem 0.75rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- ==================== HERO ==================== -->
+<section class="hero">
+  <div class="hero-content">
+    <span class="hero-badge">Strategy Consultant's AI Toolkit</span>
+    <h1 class="hero-title">
+      <span class="gradient-text">AIツール活用</span><br>マスターガイド
+    </h1>
+    <p class="hero-sub">
+      MacBook Pro M1 環境での Claude Code セットアップから、5つのAIツールの最適な使い分けまで。戦略コンサルタントのための実践ガイド。
+    </p>
+    <div class="hero-chips">
+      <span class="chip"><span class="icon">🔵</span> Claude</span>
+      <span class="chip"><span class="icon">🟢</span> ChatGPT</span>
+      <span class="chip"><span class="icon">🔷</span> Perplexity</span>
+      <span class="chip"><span class="icon">🌀</span> Gemini</span>
+      <span class="chip"><span class="icon">🎨</span> Napkin AI</span>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ==================== SECTION 1: Claude Code on Mac ==================== -->
+<section class="section">
+  <div class="section-header">
+    <span class="section-number">Section 01</span>
+    <h2 class="section-title">Claude Code × MacBook Pro M1</h2>
+    <p class="section-desc">M1チップ搭載Macなら、ネイティブインストーラーで最もスムーズにセットアップできます</p>
+  </div>
+
+  <div class="mac-setup">
+    <!-- Step 1 -->
+    <div class="step-card">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <h3>ネイティブインストーラーで一発インストール</h3>
+        <p>Node.js不要。ターミナルを開いて以下を実行するだけです。</p>
+        <div class="code-block">
+          <span class="comment"># ターミナル（Terminal.app）を開いて実行</span><br>
+          <span class="cmd">curl -fsSL</span> https://code.claude.com/install.sh | <span class="cmd">sh</span>
+        </div>
+        <div class="tip-box">
+          <span class="tip-icon">💡</span>
+          <span>M1 Macは ARM64 ネイティブバイナリが自動選択されます。Rosetta変換は不要で、高速に動作します。</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 2 -->
+    <div class="step-card">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <h3>インストール確認</h3>
+        <p>バージョン番号が表示されれば成功です。</p>
+        <div class="code-block">
+          <span class="cmd">claude</span> --version
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 3 -->
+    <div class="step-card">
+      <div class="step-num">3</div>
+      <div class="step-content">
+        <h3>認証（ブラウザで自動ログイン）</h3>
+        <p>claudeコマンドを実行すると、ブラウザが開いてClaude Pro/Maxアカウントで認証されます。</p>
+        <div class="code-block">
+          <span class="comment"># プロジェクトフォルダに移動してから起動</span><br>
+          <span class="cmd">cd</span> ~/Documents/my-project<br>
+          <span class="cmd">claude</span>
+        </div>
+        <div class="tip-box">
+          <span class="tip-icon">💡</span>
+          <span>Claude Max プランなら API従量課金ではなく月額固定で利用可能。ヘビーユーザーにはMaxがおすすめ。</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 4 -->
+    <div class="step-card">
+      <div class="step-num">4</div>
+      <div class="step-content">
+        <h3>VS Code連携（オプション）</h3>
+        <p>VS Code拡張機能をインストールすると、エディタ内のターミナルから直接Claude Codeを使えます。</p>
+        <div class="code-block">
+          <span class="comment"># VS Code のターミナルパネルで</span><br>
+          <span class="cmd">claude</span><br><br>
+          <span class="comment"># 複数パネルで並列実行も可能</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 5 -->
+    <div class="step-card">
+      <div class="step-num">5</div>
+      <div class="step-content">
+        <h3>Desktop App（ターミナル不要の選択肢）</h3>
+        <p>ターミナル操作に慣れていない場合は、macOS用のDesktopアプリもあります。GUIでClaude Codeの機能を利用できます。</p>
+        <div class="code-block">
+          <span class="comment"># ダウンロード先</span><br>
+          <span class="string">code.claude.com</span> → macOS版をダウンロード
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ==================== SECTION 2: TOOL MAP ==================== -->
+<section class="section">
+  <div class="section-header">
+    <span class="section-number">Section 02</span>
+    <h2 class="section-title">5つのAIツール 役割マップ</h2>
+    <p class="section-desc">各ツールの特性を活かした最適な配置。重複を避け、それぞれの強みに集中させる。</p>
+  </div>
+
+  <div class="tool-grid">
+    <!-- Perplexity -->
+    <div class="tool-card" data-tool="perplexity">
+      <div class="tool-header">
+        <div class="tool-icon">🔷</div>
+        <div>
+          <div class="tool-name">Perplexity Pro</div>
+          <div class="tool-role">リサーチ・情報収集のハブ</div>
+        </div>
+      </div>
+      <p class="tool-desc">ソース付きで最新情報を返すのが最大の強み。ファクトベースの調査はここに集中。</p>
+      <div class="use-cases">
+        <span class="use-tag">市場調査</span>
+        <span class="use-tag">競合分析</span>
+        <span class="use-tag">業界トレンド</span>
+        <span class="use-tag">ファクト検証</span>
+        <span class="use-tag">決算情報</span>
+      </div>
+    </div>
+
+    <!-- Claude -->
+    <div class="tool-card" data-tool="claude">
+      <div class="tool-header">
+        <div class="tool-icon">🔵</div>
+        <div>
+          <div class="tool-name">Claude Pro / Max</div>
+          <div class="tool-role">深い思考・構造化・制作の中核</div>
+        </div>
+      </div>
+      <p class="tool-desc">「考える」と「作る」の両方の中心。Issue Driven学習ツールやOCRパイプラインの構築はここで。</p>
+      <div class="use-cases">
+        <span class="use-tag">レポート構造化</span>
+        <span class="use-tag">HTML教材制作</span>
+        <span class="use-tag">Kindle OCR</span>
+        <span class="use-tag">イシュー分析</span>
+        <span class="use-tag">Claude Code</span>
+      </div>
+    </div>
+
+    <!-- ChatGPT -->
+    <div class="tool-card" data-tool="chatgpt">
+      <div class="tool-header">
+        <div class="tool-icon">🟢</div>
+        <div>
+          <div class="tool-name">ChatGPT Plus / Pro</div>
+          <div class="tool-role">汎用アシスタント＋画像生成</div>
+        </div>
+      </div>
+      <p class="tool-desc">DALL-Eの画像生成とGPTsエコシステムが強み。ビジュアル素材とブレストに。</p>
+      <div class="use-cases">
+        <span class="use-tag">画像生成</span>
+        <span class="use-tag">ブレインストーミング</span>
+        <span class="use-tag">データ可視化</span>
+        <span class="use-tag">GPTsカスタム</span>
+      </div>
+    </div>
+
+    <!-- Gemini -->
+    <div class="tool-card" data-tool="gemini">
+      <div class="tool-header">
+        <div class="tool-icon">🌀</div>
+        <div>
+          <div class="tool-name">Gemini Advanced</div>
+          <div class="tool-role">Google連携＋超長文処理</div>
+        </div>
+      </div>
+      <p class="tool-desc">Googleワークスペース連携と100万トークン超の長コンテキストが最大の武器。</p>
+      <div class="use-cases">
+        <span class="use-tag">Google Docs連携</span>
+        <span class="use-tag">YouTube要約</span>
+        <span class="use-tag">大量PDF処理</span>
+        <span class="use-tag">Slides統合</span>
+      </div>
+    </div>
+
+    <!-- Napkin AI -->
+    <div class="tool-card" data-tool="napkin">
+      <div class="tool-header">
+        <div class="tool-icon">🎨</div>
+        <div>
+          <div class="tool-name">Napkin AI</div>
+          <div class="tool-role">情報の図解化特化</div>
+        </div>
+      </div>
+      <p class="tool-desc">テキストを瞬時にダイアグラム・インフォグラフィックに変換。プレゼン資料の仕上げに。</p>
+      <div class="use-cases">
+        <span class="use-tag">フロー図</span>
+        <span class="use-tag">プロセス図</span>
+        <span class="use-tag">インフォグラフィック</span>
+        <span class="use-tag">概念図</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ==================== SECTION 3: COMPARISON TABLE ==================== -->
+<section class="section">
+  <div class="section-header">
+    <span class="section-number">Section 03</span>
+    <h2 class="section-title">機能比較マトリクス</h2>
+    <p class="section-desc">用途ごとに最適なツールが一目でわかる早見表</p>
+  </div>
+
+  <div class="compare-table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>用途</th>
+          <th>Perplexity</th>
+          <th>Claude</th>
+          <th>ChatGPT</th>
+          <th>Gemini</th>
+          <th>Napkin</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>リサーチ・最新情報</td>
+          <td class="strength">◎ 最適</td>
+          <td class="neutral">○</td>
+          <td class="neutral">○</td>
+          <td class="neutral">○</td>
+          <td class="neutral">—</td>
+        </tr>
+        <tr>
+          <td>論理構造化・分析</td>
+          <td class="neutral">△</td>
+          <td class="strength">◎ 最適</td>
+          <td class="neutral">○</td>
+          <td class="neutral">○</td>
+          <td class="neutral">—</td>
+        </tr>
+        <tr>
+          <td>コーディング・開発</td>
+          <td class="neutral">—</td>
+          <td class="strength">◎ 最適</td>
+          <td class="neutral">○</td>
+          <td class="neutral">△</td>
+          <td class="neutral">—</td>
+        </tr>
+        <tr>
+          <td>レポート・文書作成</td>
+          <td class="neutral">△</td>
+          <td class="strength">◎ 最適</td>
+          <td class="neutral">○</td>
+          <td class="neutral">○</td>
+          <td class="neutral">—</td>
+        </tr>
+        <tr>
+          <td>画像生成</td>
+          <td class="neutral">—</td>
+          <td class="neutral">△</td>
+          <td class="strength">◎ 最適</td>
+          <td class="neutral">○</td>
+          <td class="neutral">—</td>
+        </tr>
+        <tr>
+          <td>Google連携</td>
+          <td class="neutral">—</td>
+          <td class="neutral">—</td>
+          <td class="neutral">△</td>
+          <td class="strength">◎ 最適</td>
+          <td class="neutral">—</td>
+        </tr>
+        <tr>
+          <td>図解・ダイアグラム</td>
+          <td class="neutral">—</td>
+          <td class="neutral">○</td>
+          <td class="neutral">△</td>
+          <td class="neutral">△</td>
+          <td class="strength">◎ 最適</td>
+        </tr>
+        <tr>
+          <td>超長文の処理</td>
+          <td class="neutral">△</td>
+          <td class="neutral">○</td>
+          <td class="neutral">○</td>
+          <td class="strength">◎ 最適</td>
+          <td class="neutral">—</td>
+        </tr>
+        <tr>
+          <td>HTML教材制作</td>
+          <td class="neutral">—</td>
+          <td class="strength">◎ 最適</td>
+          <td class="neutral">○</td>
+          <td class="neutral">△</td>
+          <td class="neutral">—</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ==================== SECTION 4: WORKFLOW ==================== -->
+<section class="section">
+  <div class="section-header">
+    <span class="section-number">Section 04</span>
+    <h2 class="section-title">実践ワークフロー</h2>
+    <p class="section-desc">コンサル案件のイシュー分析を例にした、ツール横断パイプライン</p>
+  </div>
+
+  <div class="workflow-container">
+    <div class="workflow-line"></div>
+
+    <div class="wf-step">
+      <div class="wf-dot"></div>
+      <div class="wf-tool">Perplexity Pro</div>
+      <div class="wf-title">業界データ・競合情報を収集</div>
+      <div class="wf-desc">ソース付きで市場規模、成長率、競合の最新動向を調査。3C・5Forcesに必要なファクトを揃える。</div>
+      <span class="wf-arrow">↓ Markdownでエクスポート</span>
+    </div>
+
+    <div class="wf-step">
+      <div class="wf-dot"></div>
+      <div class="wf-tool">Claude（チャット / Code）</div>
+      <div class="wf-title">イシューツリー構築 → レポートドラフト</div>
+      <div class="wf-desc">収集データを基にイシューを分解・構造化。仮説を立て、ストーリーラインを組み上げてドラフトを作成。</div>
+      <span class="wf-arrow">↓ 構造化テキストを渡す</span>
+    </div>
+
+    <div class="wf-step">
+      <div class="wf-dot"></div>
+      <div class="wf-tool">Napkin AI</div>
+      <div class="wf-title">フレームワーク図・プロセス図を生成</div>
+      <div class="wf-desc">Claudeで整理したテキストをNapkin AIに貼り付け、ビジュアルダイアグラムに変換。</div>
+      <span class="wf-arrow">↓ 画像をダウンロード</span>
+    </div>
+
+    <div class="wf-step">
+      <div class="wf-dot"></div>
+      <div class="wf-tool">ChatGPT（DALL-E）</div>
+      <div class="wf-title">プレゼン用ビジュアル素材を生成</div>
+      <div class="wf-desc">コンセプトイメージ、アイコン、カスタム図解など、スライドを彩る素材を画像生成。</div>
+      <span class="wf-arrow">↓ Googleスライドへ</span>
+    </div>
+
+    <div class="wf-step">
+      <div class="wf-dot"></div>
+      <div class="wf-tool">Gemini Advanced</div>
+      <div class="wf-title">Googleスライドで統合・仕上げ</div>
+      <div class="wf-desc">Googleワークスペース連携で最終プレゼン資料を組み上げ。チームへの共有もシームレス。</div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ==================== SECTION 5: GOODNOTES ==================== -->
+<section class="section">
+  <div class="section-header">
+    <span class="section-number">Section 05</span>
+    <h2 class="section-title">GoodNotes連携ストラテジー</h2>
+    <p class="section-desc">手書きの思考とデジタル教材を一つのノート上でシームレスに統合</p>
+  </div>
+
+  <div class="gn-methods">
+    <div class="gn-card">
+      <span class="gn-emoji">🌐</span>
+      <span class="label">方法 A — リンク参照</span>
+      <h3>GitHub Pages × GoodNotes</h3>
+      <p>Claudeで作ったインタラクティブHTML教材をGitHub Pagesにホスト。URLをGoodNotesに貼り付けて、タップで参照。Claude Codeでデプロイを高速化。</p>
+    </div>
+
+    <div class="gn-card">
+      <span class="gn-emoji">📄</span>
+      <span class="label">方法 B — PDF取り込み</span>
+      <h3>PDF → GoodNotes直接インポート</h3>
+      <p>フレームワーク一覧、用語集など静的な参照資料はPDFで生成し、GoodNotesにインポート。手書きメモを重ねて理解を深化。</p>
+    </div>
+
+    <div class="gn-card">
+      <span class="gn-emoji">🔄</span>
+      <span class="label">方法 C — ハイブリッド運用（推奨）</span>
+      <h3>静的PDF + 動的HTMLの組み合わせ</h3>
+      <p>概念の全体像はPDFでGoodNotesに取り込みペンで書き込み。詳細な動的コンテンツはGitHub PagesリンクからタップでアクセF。二つの世界を一冊に統合。</p>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ==================== FOOTER ==================== -->
+<footer class="footer">
+  <p>AI Tool Management Guide for Strategy Consultants</p>
+  <p style="margin-top:0.5rem; color: var(--text-muted);">Built with Claude · MacBook Pro M1 Optimized</p>
+</footer>
+
+</body>
+</html>
